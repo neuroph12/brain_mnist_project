@@ -7,6 +7,8 @@ from datetime import datetime
 
 import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 from brain_mnist.input_pipeline import data_input_fn
 from brain_mnist.estimator import BrainMnistEstimator
@@ -112,6 +114,26 @@ def main():
 
         logger.info("Evaluation of test set ...")
         estimator.evaluate(input_fn=test_input_fn)
+    elif mode == tf.estimator.ModeKeys.PREDICT:
+        test_input_fn = data_input_fn(tfrecords_test,
+                                      batch_size=params['batch_size'],
+                                      epochs=1,
+                                      n_classes=params['n_classes'],
+                                      shuffle=False,
+                                      fake_input=args.fake_input)
+
+        predictions = estimator.predict(input_fn=test_input_fn)
+        for n, pred in enumerate(predictions):
+            signal_input = pred['signal_input']
+            digit_pred = pred['digit']
+            print(digit_pred)
+
+            sns.set()
+            sns.lineplot(x=[i for i in range(len(signal_input[:, 0]))], y=signal_input[:, 0])
+            plt.title('EEG signal corresponding to digit {}'.format(np.argmax(digit_pred)))
+            plt.xlabel('Time (s)')
+            plt.ylabel('EEG signal amplitude')
+            plt.show()
 
 
 if __name__ == '__main__':

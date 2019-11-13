@@ -111,7 +111,7 @@ class Resnet10(Model):
 
         # FC
         self.flatten = Flatten(name='flatten')
-        self.fc1 = Dense(1024, activation='relu', name='fc1')
+        self.fc1 = Dense(2048, activation='relu', name='fc1')
         self.fc2 = Dense(self.n_classes, activation=None, name='fc2')
 
     def call(self, inputs, training=None, mask=None):
