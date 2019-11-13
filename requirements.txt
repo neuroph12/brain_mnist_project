@@ -1,0 +1,6 @@
+tensorflow
+absl
+tqdm
+matplotlib
+seaborn
+numpy
