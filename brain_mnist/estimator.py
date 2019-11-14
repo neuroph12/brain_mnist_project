@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from brain_mnist.model import Resnet10
+from brain_mnist.model import Resnet10, ConvNet1D
 
 
 class BrainMnistEstimator(object):
@@ -10,6 +10,8 @@ class BrainMnistEstimator(object):
     def _instantiate_model(self, params, training=False):
         if params['model'] == 'resnet10':
             self.model = Resnet10(params=params, is_training=training)
+        elif params['model'] == 'convnet':
+            self.model = ConvNet1D(params=params, is_training=training)
 
     def _output_network(self, features, params, training=False):
         self._instantiate_model(params=params, training=training)
@@ -20,7 +22,7 @@ class BrainMnistEstimator(object):
         digit_pred = predictions['digit']
         digit_label = labels['digit_label']
 
-        # losses = tf.nn.softmax_cross_entropy_with_logits_v2(labels=digit_label, logits=digit_pred)
+        losses = tf.nn.softmax_cross_entropy_with_logits_v2(labels=digit_label, logits=digit_pred)
         loss = tf.reduce_sum(losses) / params['batch_size']
         tf.summary.scalar('loss', tensor=loss)
         return loss

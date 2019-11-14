@@ -7,7 +7,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from brain_mnist.data_processing.mindwave_parser import MAX_SIZE, MW_FREQ
+from brain_mnist.data_processing.mindwave_parser import MW_FREQ
+# MAX_SIZE = 1024
+MAX_SIZE = 512
 
 
 def get_dataset(tfrecords,
@@ -34,6 +36,8 @@ def get_dataset(tfrecords,
         for key, val in parsed_feature.items():
             if key == 'signal':
                 val = tf.cast(val, dtype=tf.float32)
+                # val = tf.subtract(val, tf.reduce_min(val, axis=-1, keep_dims=True))
+                # val = tf.divide(val, tf.reduce_max(val, axis=-1, keep_dims=True))
                 features[key] = val
             elif key == 'code':
                 val = tf.one_hot(val, depth=n_classes)
@@ -77,6 +81,9 @@ def data_input_fn(tfrecords,
         signal_input = next_batch[0]['signal']
         digit_label = next_batch[1]['code']
 
+        # Scale input signal to [0, 1]
+        signal_input = tf.subtract(signal_input, tf.reduce_min(signal_input, axis=-1, keep_dims=True))
+        signal_input = tf.divide(signal_input, tf.reduce_max(signal_input, axis=-1, keep_dims=True))
         signal_input = tf.expand_dims(signal_input, axis=-1)
 
         features, labels = {}, {}

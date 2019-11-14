@@ -6,6 +6,7 @@ from copy import deepcopy
 from tqdm import tqdm
 import tensorflow as tf
 import numpy as np
+from scipy.signal import wiener
 
 from brain_mnist.data_processing.mindwave_parser import parse_data_file
 
@@ -55,6 +56,10 @@ def float_list_feature(value):
 
 
 def create_tf_example(entry_id, entry_event, device, channel, code, size, signal):
+    # Subsample signal
+    signal = signal[0::2]
+    signal = wiener(signal, int(len(signal) / 8.0), noise=None)
+
     feature_dict = {
         'id': int64_feature(int(entry_id)),
         'event': int64_feature(int(entry_event)),

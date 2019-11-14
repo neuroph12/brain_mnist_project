@@ -3,6 +3,7 @@ import os
 
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.signal import wiener
 import seaborn as sns
 from tqdm import tqdm
 
@@ -21,6 +22,7 @@ def parse_entry(data_entry):
 
 def parse_data_file(filepath):
     print('\nParsing raw .txt data file ...')
+    print(filepath)
     with open(filepath, 'r') as f:
         raw_data = f.readlines()
 
@@ -47,8 +49,12 @@ def main():
     meta_data, data = parse_data_file(fp)
     print('Dataset shape: {}'.format(data.shape))
 
+    signal = data[args.test_id]
+    signal = signal[0::4]
+    signal = wiener(signal, 64, noise=None)
+
     sns.set()
-    sns.lineplot(x=[i / MW_FREQ for i in range(len(data[args.test_id]))], y=data[args.test_id])
+    sns.lineplot(x=[i / MW_FREQ for i in range(len(signal))], y=signal)
     plt.title('EEG signal {} corresponding to digit {}'.format(meta_data[args.test_id][0], meta_data[args.test_id][4]))
     plt.xlabel('Time (s)')
     plt.ylabel('EEG signal amplitude')
