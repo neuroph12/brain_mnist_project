@@ -20,7 +20,7 @@ class BrainMnistEstimator(object):
         digit_pred = predictions['digit']
         digit_label = labels['digit_label']
 
-        losses = tf.nn.softmax_cross_entropy_with_logits_v2(labels=digit_label, logits=digit_pred)
+        # losses = tf.nn.softmax_cross_entropy_with_logits_v2(labels=digit_label, logits=digit_pred)
         loss = tf.reduce_sum(losses) / params['batch_size']
         tf.summary.scalar('loss', tensor=loss)
         return loss
