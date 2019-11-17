@@ -31,7 +31,7 @@ def main():
     parser.add_argument('--fake-input', action='store_true', default=False, help='debug with 1 batch training')
     parser.add_argument('--dropout', action='store_true', default=False, help='dropout')
     args = parser.parse_args()
-    assert args.model in ['resnet10', 'convnet'], 'Wrong model name'
+    assert args.model in ['resnet10', 'rnn'], 'Wrong model name'
     assert len(args.n_filters.split('-')) == 3, '3 values required'
     assert len(args.n_kernels.split('-')) == 3, 'Wrong n_filter arg'
 

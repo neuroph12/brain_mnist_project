@@ -8,63 +8,32 @@ from tensorflow.python.keras.layers import Conv1D, BatchNormalization, Activatio
     LSTM
 
 
-class ConvNet1D(Model):
+class RNN(Model):
     def __init__(self, params=None, is_training=False):
-        super(ConvNet1D, self).__init__()
+        super(RNN, self).__init__()
 
         self.is_training = is_training
-        # self.n_cnn_filters = params['n_cnn_filters']
-        self.n_cnn_kernels = params['n_cnn_kernels']
         self.n_classes = params['n_classes']
 
-        # RNN preprocessing
-        self.lstm = LSTM(256, return_sequences=True, name='lstm')
-
-        # Block 1
-        self.conv1_1 = Conv1D(32, self.n_cnn_kernels[0], activation='relu', padding='same', name='conv1_1')
-        self.conv1_2 = Conv1D(32, self.n_cnn_kernels[0], activation='relu', padding='same', name='conv1_2')
-        self.pool1 = MaxPool1D(2, 2, name='pool1')
-
-        # Block 2
-        self.conv2_1 = Conv1D(64, self.n_cnn_kernels[1], activation='relu', padding='same', name='conv2_1')
-        self.conv2_2 = Conv1D(64, self.n_cnn_kernels[1], activation='relu', padding='same', name='conv2_2')
-        self.pool2 = MaxPool1D(2, 2, name='pool2')
-
-        # Block 3
-        self.conv3_1 = Conv1D(128, self.n_cnn_kernels[2], activation='relu', padding='same', name='conv3_1')
-        self.conv3_2 = Conv1D(128, self.n_cnn_kernels[2], activation='relu', padding='same', name='conv3_2')
-        self.conv3_3 = Conv1D(128, self.n_cnn_kernels[2], activation='relu', padding='same', name='conv3_3')
-        self.pool3 = MaxPool1D(2, 2, name='pool3')
-
-        self.flatten = Flatten(name='flatten')
+        # RNN
+        self.lstm1 = LSTM(256, return_sequences=True, name='lstm1')
+        self.lstm2 = LSTM(256, name='lstm2')
 
         # FC
-        self.fc1 = Dense(1024, activation='relu', name='fc1')
-        self.fc2 = Dense(self.n_classes, activation=None, name='fc2')
+        self.fc1 = Dense(256, activation='relu', name='fc1')
+        self.fc2 = Dense(256, activation='relu', name='fc2')
+        self.fc3 = Dense(self.n_classes, activation=None, name='fc3')
 
     def call(self, inputs, training=None, mask=None):
         signal_input = inputs['signal_input']
 
-        signal_input = self.lstm(signal_input)
-        with tf.name_scope('block1'):
-            x = self.conv1_1(signal_input)
-            x = self.conv1_2(x)
-            x = self.pool1(x)
+        with tf.name_scope('rnn'):
+            x = self.lstm1(signal_input)
+            x = self.lstm2(x)
 
-        with tf.name_scope('block2'):
-            x = self.conv2_1(x)
-            x = self.conv2_2(x)
-            x = self.pool2(x)
-
-        with tf.name_scope('block3'):
-            x = self.conv3_1(x)
-            x = self.conv3_2(x)
-            x = self.conv3_3(x)
-            x = self.pool3(x)
-
-        x = self.flatten(x)
         x = self.fc1(x)
-        output = self.fc2(x)
+        x = self.fc2(x)
+        output = self.fc3(x)
         return output
 
 

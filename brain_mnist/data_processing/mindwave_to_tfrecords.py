@@ -56,7 +56,7 @@ def float_list_feature(value):
 
 
 def create_tf_example(entry_id, entry_event, device, channel, code, size, signal):
-    # Subsample signal
+    # Subsample signal & filter noise
     signal = signal[0::2]
     signal = wiener(signal, int(len(signal) / 8.0), noise=None)
 

@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from brain_mnist.model import Resnet10, ConvNet1D
+from brain_mnist.model import Resnet10, RNN
 
 
 class BrainMnistEstimator(object):
@@ -10,8 +10,8 @@ class BrainMnistEstimator(object):
     def _instantiate_model(self, params, training=False):
         if params['model'] == 'resnet10':
             self.model = Resnet10(params=params, is_training=training)
-        elif params['model'] == 'convnet':
-            self.model = ConvNet1D(params=params, is_training=training)
+        elif params['model'] == 'rnn':
+            self.model = RNN(params=params, is_training=training)
 
     def _output_network(self, features, params, training=False):
         self._instantiate_model(params=params, training=training)
